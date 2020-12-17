@@ -6,7 +6,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class City  implements ActionListener{
     JFrame jFrame = new JFrame();
@@ -20,9 +19,7 @@ public class City  implements ActionListener{
 
     JButton[] buttons = new JButton[25];
 
-    JPopupMenu popupMenu = new JPopupMenu("Wybierz budynek");
-    JMenuItem[] buildingsMenu = new JMenuItem[5];
-
+    //Update budget every second
     Timer timer = new Timer(1000, new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -33,7 +30,7 @@ public class City  implements ActionListener{
 
     private double budget = 2000; //Initial budget
     private double income = 0; // Initial income per second
-    private List<String> currentBuildings = new ArrayList<>();
+    private final List<String> currentBuildings = new ArrayList<>(); // list of existing buildings
 
     City(){
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -42,6 +39,7 @@ public class City  implements ActionListener{
         jFrame.setLayout(new BorderLayout());
         jFrame.setVisible(true);
 
+        //Score & income panel
         setScorePanel(budgetLabel,JLabel.LEFT,"Kwota: " + budget);
         setScorePanel(incomeLabel,JLabel.RIGHT,"Przychód: "+income);
 
@@ -52,6 +50,7 @@ public class City  implements ActionListener{
         scorePanel.add(incomeLabel);
         jFrame.add(scorePanel,BorderLayout.NORTH);
 
+        //Space for building buildings
         cityBuildings .setLayout(new GridLayout(5,5));
         cityBuildings.setBounds(0,100,1920,680);
         cityBuildings.setBackground(new Color(150,150,150));
@@ -63,6 +62,8 @@ public class City  implements ActionListener{
             buttons[i].addActionListener(this);
         }
         jFrame.add(cityBuildings);
+
+        // A panel with the name of the available buildings, their costs and requirements
         description.setLayout(new GridLayout(6,4));
         description.setBounds(0,0,1920,300);
         setDescriptionPanel();
@@ -72,16 +73,10 @@ public class City  implements ActionListener{
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        //TODO
         timer.start();
         for (int i = 0 ; i <25 ; i++){
             if (e.getSource() == buttons[i]){
-                if (buttons[i].getText()==""){
-                    buttons[i].setForeground(new Color(255,0,0));
-//                    buttons[i].setText("X");
-//                    budget -= 500;
-//                    budgetLabel.setText("Kwota: " + budget);
-//                    popup.show(buttons[i],190,136 );
+                if (buttons[i].getText().equals("")){
                     showMenu(buttons[i]);
                 }
             }
@@ -89,15 +84,30 @@ public class City  implements ActionListener{
     }
 
     public void build(Building building, JButton button){
-        //TODO
-        if (building.getCost() < budget) {
-//            button.setText(building.getSymbol());
+        if (checkRequirements(building) ) {
             button.setIcon(building.getIcon());
             budget -= building.getCost();
             income += building.getIncome();
             budgetLabel.setText("Kwota: " + budget);
             incomeLabel.setText("Przychód: " + income);
         }
+        else {
+            if (building.getCost() > budget)
+                JOptionPane.showMessageDialog(jFrame, "Nie posiadasz wystarczająco dużo pieniędzy");
+            else
+                JOptionPane.showMessageDialog(jFrame, "Nie posiadasz wymaganych budynków");
+        }
+    }
+
+    private boolean checkRequirements(Building building) {
+        List<String> requirements = new ArrayList<>(building.getRequirements());
+        if (building.getCost() > budget)
+            return false;
+        for (String requirement : requirements){
+            if (!currentBuildings.contains(requirement))
+                return false;
+        }
+        return true;
     }
 
     public void showMenu(JButton button){
@@ -111,7 +121,7 @@ public class City  implements ActionListener{
                     build(buildingType[finalI], button);
                 }
             });
-            if (buildingType[i].getCost() > budget) {
+            if (!checkRequirements(buildingType[i]) ) {
                 jMenuItem.setForeground(Color.RED);
             }
             popup.add(jMenuItem);
@@ -127,6 +137,7 @@ public class City  implements ActionListener{
         label.setText(text);
         label.setOpaque(true);
     }
+
     private void setDescriptionPanel(){
         int textType;
 
@@ -148,7 +159,6 @@ public class City  implements ActionListener{
                 label.setText(desciptionList.get(i));
             }
             else{
-
                 if (i==8)
                     building = new WoodcuttersHut();
                 if (i==12)
@@ -174,8 +184,6 @@ public class City  implements ActionListener{
                         break;
                 }
             }
-
-
             description.add(label);
         }
     }

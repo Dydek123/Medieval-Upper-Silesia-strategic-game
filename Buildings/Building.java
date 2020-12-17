@@ -20,15 +20,12 @@ public abstract class Building {
         return cost;
     }
     public String getType() {
-        return type;
+        return type+" [" + symbol + "]" ;
     }
     public Integer getIncome() {
         return income;
     }
     public List<String> getRequirements() {
         return requirements;
-    }
-    public String getSymbol() {
-        return symbol;
     }
 }
