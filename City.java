@@ -20,17 +20,20 @@ public class City  implements ActionListener{
 
     JButton[] buttons = new JButton[25];
 
+    JPopupMenu popupMenu = new JPopupMenu("Wybierz budynek");
+    JMenuItem[] buildingsMenu = new JMenuItem[5];
+
     Timer timer = new Timer(1000, new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println(budget);
             budget += income;
             budgetLabel.setText("Kwota: " + budget);
         }
     });
 
     private double budget = 2000; //Initial budget
-    private double income = 10; // Initial income per day
+    private double income = 0; // Initial income per second
+    private List<String> currentBuildings = new ArrayList<>();
 
     City(){
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -50,6 +53,7 @@ public class City  implements ActionListener{
         jFrame.add(scorePanel,BorderLayout.NORTH);
 
         cityBuildings .setLayout(new GridLayout(5,5));
+        cityBuildings.setBounds(0,100,1920,680);
         cityBuildings.setBackground(new Color(150,150,150));
         for (int i = 0 ; i < 25 ; i++){
             buttons[i] = new JButton();
@@ -69,21 +73,50 @@ public class City  implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
         //TODO
+        timer.start();
         for (int i = 0 ; i <25 ; i++){
             if (e.getSource() == buttons[i]){
                 if (buttons[i].getText()==""){
                     buttons[i].setForeground(new Color(255,0,0));
-                    buttons[i].setText("X");
-                    budget -= 500;
-                    budgetLabel.setText("Kwota: " + budget);
+//                    buttons[i].setText("X");
+//                    budget -= 500;
+//                    budgetLabel.setText("Kwota: " + budget);
+//                    popup.show(buttons[i],190,136 );
+                    showMenu(buttons[i]);
                 }
             }
         }
-        timer.start();
     }
 
-    public void build(Integer cost){
+    public void build(Building building, JButton button){
         //TODO
+        if (building.getCost() < budget) {
+//            button.setText(building.getSymbol());
+            button.setIcon(building.getIcon());
+            budget -= building.getCost();
+            income += building.getIncome();
+            budgetLabel.setText("Kwota: " + budget);
+            incomeLabel.setText("Przychód: " + income);
+        }
+    }
+
+    public void showMenu(JButton button){
+        final JPopupMenu popup = new JPopupMenu();
+        Building[] buildingType = {new Quarry(), new WoodcuttersHut(), new Sawmill(), new GoldMine(), new Mint()};
+
+        for (int i = 0 ; i < 5 ; i++) {
+            int finalI = i;
+            JMenuItem jMenuItem = new JMenuItem(new AbstractAction(buildingType[finalI].getType() + " " +buildingType[finalI].getCost()) {
+                public void actionPerformed(ActionEvent e) {
+                    build(buildingType[finalI], button);
+                }
+            });
+            if (buildingType[i].getCost() > budget) {
+                jMenuItem.setForeground(Color.RED);
+            }
+            popup.add(jMenuItem);
+        }
+        popup.show(button,190,136);
     }
 
     private void setScorePanel(JLabel label, int direction, String text){
@@ -145,34 +178,5 @@ public class City  implements ActionListener{
 
             description.add(label);
         }
-//        for (int i = 4 ; i < 24 ; i++){
-//            Building building = new Quarry();
-//            if (i==8)
-//                building = new WoodcuttersHut();
-//            if (i==12)
-//                building = new Sawmill();
-//            if (i==16)
-//                building = new GoldMine();
-//            if (i==20)
-//                building = new Mint();
-//
-//            textType = i%4;
-//            switch (textType){
-//                case 0:
-//                    label.setText(building.getType());
-//                    break;
-//                case 1:
-//                    label.setText(String.valueOf(building.getCost()));
-//                    break;
-//                case 2:
-//                    label.setText(String.valueOf(building.getIncome()));
-//                    break;
-//                case 3:
-//                    label.setText(String.valueOf(building.getRequirements()));
-//                    break;
-//            }
-//
-//            description.add(label);
-//        }
     }
 }

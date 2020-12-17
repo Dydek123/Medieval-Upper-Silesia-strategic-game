@@ -1,5 +1,7 @@
 package Buildings;
 
+import javax.swing.*;
+
 public class Mint extends Building{
     public Mint(){
         this.cost = 10000;
@@ -10,5 +12,6 @@ public class Mint extends Building{
         this.requirements.add("TAR");
         this.requirements.add("CD");
         this.requirements.add("KZ");
+        this.icon = new ImageIcon(System.getProperty("user.dir") + "/src/buildingIcons/Mint.png");
     }
 }
