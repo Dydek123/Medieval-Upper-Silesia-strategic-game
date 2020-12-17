@@ -28,4 +28,8 @@ public abstract class Building {
     public List<String> getRequirements() {
         return requirements;
     }
+
+    public String getSymbol() {
+        return symbol;
+    }
 }

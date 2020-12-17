@@ -24,7 +24,7 @@ public class City  implements ActionListener{
         @Override
         public void actionPerformed(ActionEvent e) {
             budget += income;
-            budgetLabel.setText("Kwota: " + budget);
+            budgetLabel.setText("Pijōndze: " + budget);
         }
     });
 
@@ -40,8 +40,8 @@ public class City  implements ActionListener{
         jFrame.setVisible(true);
 
         //Score & income panel
-        setScorePanel(budgetLabel,JLabel.LEFT,"Kwota: " + budget);
-        setScorePanel(incomeLabel,JLabel.RIGHT,"Przychód: "+income);
+        setScorePanel(budgetLabel,JLabel.LEFT,"Pijōndze: " + budget);
+        setScorePanel(incomeLabel,JLabel.RIGHT,"Przichōd: "+income);
 
         scorePanel.setLayout(new GridLayout(1,2));
         scorePanel.setBounds(0,0,1920,100);
@@ -88,14 +88,14 @@ public class City  implements ActionListener{
             button.setIcon(building.getIcon());
             budget -= building.getCost();
             income += building.getIncome();
-            budgetLabel.setText("Kwota: " + budget);
-            incomeLabel.setText("Przychód: " + income);
+            budgetLabel.setText("Pijōndze: " + budget);
+            incomeLabel.setText("Przichōd: " + income);
         }
         else {
             if (building.getCost() > budget)
-                JOptionPane.showMessageDialog(jFrame, "Nie posiadasz wystarczająco dużo pieniędzy");
+                JOptionPane.showMessageDialog(jFrame, "Niy posiadŏsz za dość dużo pijyndzy");
             else
-                JOptionPane.showMessageDialog(jFrame, "Nie posiadasz wymaganych budynków");
+                JOptionPane.showMessageDialog(jFrame, "Niy posiadŏsz wymŏganych budōnkōw");
         }
     }
 
@@ -143,9 +143,9 @@ public class City  implements ActionListener{
 
         List<String> desciptionList = new ArrayList<>(4);
         desciptionList.add("");
-        desciptionList.add("Cena");
-        desciptionList.add("Przychód");
-        desciptionList.add("Wymagania");
+        desciptionList.add("Cyna");
+        desciptionList.add("Przichōd");
+        desciptionList.add("Wymŏganiŏ");
 
         Building building = new Quarry();
         for (int i = 0 ; i < 24 ; i++){
