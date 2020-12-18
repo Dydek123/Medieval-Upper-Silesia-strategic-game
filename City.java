@@ -90,6 +90,7 @@ public class City  implements ActionListener{
             income += building.getIncome();
             budgetLabel.setText("Pijōndze: " + budget);
             incomeLabel.setText("Przichōd: " + income);
+            currentBuildings.add(building.getSymbol());
         }
         else {
             if (building.getCost() > budget)
@@ -132,7 +133,7 @@ public class City  implements ActionListener{
     private void setScorePanel(JLabel label, int direction, String text){
         label.setBackground(new Color(25,25,25));
         label.setForeground(new Color(25,255,0));
-        label.setFont(new Font("Ink Free", Font.BOLD, 75));
+        label.setFont(new Font("Arial", Font.BOLD, 75));
         label.setHorizontalAlignment(direction);
         label.setText(text);
         label.setOpaque(true);
@@ -152,7 +153,7 @@ public class City  implements ActionListener{
             JLabel label = new JLabel();
             label.setBackground(new Color(25,25,25));
             label.setForeground(new Color(255,255,255));
-            label.setFont(new Font("Ink Free", Font.PLAIN, 30));
+            label.setFont(new Font("Arial", Font.PLAIN, 30));
             label.setHorizontalAlignment(JLabel.LEFT);
             label.setOpaque(true);
             if (i<4) {

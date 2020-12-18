@@ -1,6 +1,7 @@
 package Buildings;
 
 import javax.swing.*;
+import java.io.File;
 
 public class Mint extends Building{
     public Mint(){
@@ -12,6 +13,6 @@ public class Mint extends Building{
         this.requirements.add(new WoodcuttersHut().getSymbol());
         this.requirements.add(new Sawmill().getSymbol());
         this.requirements.add(new GoldMine().getSymbol());
-        this.icon = new ImageIcon(System.getProperty("user.dir") + "/src/buildingIcons/Mint.png");
+        this.icon = new ImageIcon(System.getProperty("user.dir") + File.separator + "buildingIcons" + File.separator + "Mint.png");
     }
 }

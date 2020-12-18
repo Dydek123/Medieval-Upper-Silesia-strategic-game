@@ -1,6 +1,7 @@
 package Buildings;
 
 import javax.swing.*;
+import java.io.File;
 
 public class GoldMine extends Building{
     public GoldMine() {
@@ -11,6 +12,6 @@ public class GoldMine extends Building{
         this.requirements.add(new Quarry().getSymbol());
         this.requirements.add(new WoodcuttersHut().getSymbol());
         this.requirements.add(new Sawmill().getSymbol());
-        this.icon = new ImageIcon(System.getProperty("user.dir") + "/src/buildingIcons/GoldMine.png");
+        this.icon = new ImageIcon(System.getProperty("user.dir") + File.separator + "buildingIcons" + File.separator + "GoldMine.png");
     }
 }

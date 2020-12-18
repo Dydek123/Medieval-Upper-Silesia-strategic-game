@@ -2,3 +2,5 @@
 out/
 *.class
 tmp.java
+.idea/
+*.xml

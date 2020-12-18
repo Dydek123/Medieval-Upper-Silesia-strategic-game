@@ -1,6 +1,7 @@
 package Buildings;
 
 import javax.swing.*;
+import java.io.File;
 
 public class WoodcuttersHut extends Building{
     public WoodcuttersHut() {
@@ -8,6 +9,6 @@ public class WoodcuttersHut extends Building{
         this.income = 300;
         this.type = "Chałpa siōngŏrza";
         this.symbol =  "CS";
-        this.icon = new ImageIcon(System.getProperty("user.dir") + "/src/buildingIcons/WoodcuttersHut.png");
+        this.icon = new ImageIcon(System.getProperty("user.dir") + File.separator + "buildingIcons" + File.separator + "WoodcuttersHut.png");
     }
 }
