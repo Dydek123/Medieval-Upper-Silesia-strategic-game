@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +33,10 @@ public class City  implements ActionListener{
     private double budget = 2000; //Initial budget
     private double income = 0; // Initial income per second
     private final List<String> currentBuildings = new ArrayList<>(); // list of existing buildings
+    private List<Memento> mementoList = new ArrayList<>(); // List of states
+    private Originator originator = new Originator();
+    private int stateIndex = 0; //Initial state
+    private int maxStateIndex = 0; //Maximum state
 
     City(){
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -69,6 +75,54 @@ public class City  implements ActionListener{
         setDescriptionPanel();
         jFrame.add(description,BorderLayout.SOUTH);
 
+        jFrame.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if ((e.getKeyCode() == KeyEvent.VK_Z) && ((e.getModifiersEx() | KeyEvent.CTRL_DOWN_MASK) == KeyEvent.CTRL_DOWN_MASK)) {
+                    if (stateIndex>0){
+                        originator.getStateFromMemento(mementoList.get(stateIndex-1));
+
+                        income -= originator.getBuilding().getIncome();
+                        incomeLabel.setText("Przichōd: " + income);
+
+                        budget =  originator.getBudget();
+
+                        originator.getBuildingPlace().setIcon(null);
+
+                        currentBuildings.remove(originator.getBuilding().getType());
+                        maxStateIndex = stateIndex;
+                        stateIndex -= 1;
+                        originator.print();
+                    }
+                }
+                else if ((e.getKeyCode() == KeyEvent.VK_Y) && ((e.getModifiersEx() | KeyEvent.CTRL_DOWN_MASK) == KeyEvent.CTRL_DOWN_MASK)) {
+                    if (stateIndex<maxStateIndex) {
+                        originator.getStateFromMemento(mementoList.get(stateIndex));
+
+                        income += originator.getBuilding().getIncome();
+                        incomeLabel.setText("Przichōd: " + income);
+
+                        budget = originator.getBudget()-originator.getBuilding().getCost();
+
+                        originator.getBuildingPlace().setIcon(originator.getBuilding().getIcon());
+
+                        currentBuildings.add(originator.getBuilding().getType());
+                        stateIndex += 1;
+                        originator.print();
+                    }
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+
+            }
+        });
     }
 
     @Override
@@ -85,6 +139,13 @@ public class City  implements ActionListener{
 
     public void build(Building building, JButton button){
         if (checkRequirements(building) ) {
+            //Save state
+            originator.setState(budget, building, button);
+            this.addMemento(originator.saveStateToMemento());
+            originator.print();
+            stateIndex++;
+
+            //build
             button.setIcon(building.getIcon());
             budget -= building.getCost();
             income += building.getIncome();
@@ -187,5 +248,13 @@ public class City  implements ActionListener{
             }
             description.add(label);
         }
+    }
+
+    public void addMemento(Memento state){
+        mementoList.add(state);
+    }
+
+    public Memento get(int index){
+        return mementoList.get(index);
     }
 }
