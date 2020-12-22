@@ -34,8 +34,4 @@ public class Originator {
         building = memento.getBuilding();
         buildingPlace = memento.getBuildingPlace();
     }
-
-    public void print(){
-        System.out.println(budget + " " + building.getType() + " " + buildingPlace);
-    }
 }

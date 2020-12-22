@@ -1,4 +1,6 @@
 import Buildings.*;
+import Score.Description;
+import Score.Scoreboard;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,35 +12,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class City  implements ActionListener{
-    JFrame jFrame = new JFrame();
+    private JFrame jFrame = new JFrame();
 
-    JPanel scorePanel = new JPanel();
-    JPanel cityBuildings = new JPanel();
-    JPanel description = new JPanel();
+    private JPanel cityBuildings = new JPanel();
 
-    JLabel budgetLabel = new JLabel();
-    JLabel incomeLabel = new JLabel();
-
-    JButton[] buttons = new JButton[25];
+    private JButton[] buttons = new JButton[25];
 
     //Update budget every second
-    Timer timer = new Timer(1000, new ActionListener() {
+    private Timer timer = new Timer(1000, new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-            budget += income;
-            budgetLabel.setText("Pijōndze: " + budget);
+            scoreboard.setBudget(scoreboard.getBudget() + scoreboard.getIncome());
         }
     });
 
-    private double budget = 2000; //Initial budget
-    private double income = 0; // Initial income per second
+    private Scoreboard scoreboard = new Scoreboard();
+    private Description descriptionPanel = new Description();
     private final List<String> currentBuildings = new ArrayList<>(); // list of existing buildings
-    private List<Memento> mementoList = new ArrayList<>(); // List of states
-    private Originator originator = new Originator();
+    private final List<Memento> mementoList = new ArrayList<>(); // List of states
+    private final Originator originator = new Originator();
     private int stateIndex = 0; //Initial state
     private int maxStateIndex = 0; //Maximum state
 
-    City(){
+    public void play(){
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jFrame.setSize(1920,1080);
         jFrame.getContentPane().setBackground(new Color(50,50,50));
@@ -46,15 +42,10 @@ public class City  implements ActionListener{
         jFrame.setVisible(true);
 
         //Score & income panel
-        setScorePanel(budgetLabel,JLabel.LEFT,"Pijōndze: " + budget);
-        setScorePanel(incomeLabel,JLabel.RIGHT,"Przichōd: "+income);
-
-        scorePanel.setLayout(new GridLayout(1,2));
-        scorePanel.setBounds(0,0,1920,100);
-
-        scorePanel.add(budgetLabel);
-        scorePanel.add(incomeLabel);
-        jFrame.add(scorePanel,BorderLayout.NORTH);
+        scoreboard.setScorePanel(scoreboard.getBudgetLabel(),JLabel.LEFT,"Pijōndze: " + scoreboard.getBudget());
+        scoreboard.setScorePanel(scoreboard.getIncomeLabel(),JLabel.RIGHT,"Przichōd: "+ scoreboard.getIncome());
+        scoreboard.createPanel();
+        jFrame.add(scoreboard.getPanel(),BorderLayout.NORTH);
 
         //Space for building buildings
         cityBuildings .setLayout(new GridLayout(5,5));
@@ -70,11 +61,10 @@ public class City  implements ActionListener{
         jFrame.add(cityBuildings);
 
         // A panel with the name of the available buildings, their costs and requirements
-        description.setLayout(new GridLayout(6,4));
-        description.setBounds(0,0,1920,300);
-        setDescriptionPanel();
-        jFrame.add(description,BorderLayout.SOUTH);
+        descriptionPanel.createPanel();
+        jFrame.add(descriptionPanel.getPanel(),BorderLayout.SOUTH);
 
+        // Undo and Redo operations
         jFrame.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -87,33 +77,29 @@ public class City  implements ActionListener{
                     if (stateIndex>0){
                         originator.getStateFromMemento(mementoList.get(stateIndex-1));
 
-                        income -= originator.getBuilding().getIncome();
-                        incomeLabel.setText("Przichōd: " + income);
+                        scoreboard.setIncome(scoreboard.getIncome()-originator.getBuilding().getIncome());
 
-                        budget =  originator.getBudget();
+                        scoreboard.setBudget(originator.getBudget());
 
                         originator.getBuildingPlace().setIcon(null);
 
                         currentBuildings.remove(originator.getBuilding().getType());
                         maxStateIndex = stateIndex;
                         stateIndex -= 1;
-                        originator.print();
                     }
                 }
                 else if ((e.getKeyCode() == KeyEvent.VK_Y) && ((e.getModifiersEx() | KeyEvent.CTRL_DOWN_MASK) == KeyEvent.CTRL_DOWN_MASK)) {
-                    if (stateIndex<maxStateIndex) {
+                    if (stateIndex<=maxStateIndex) {
                         originator.getStateFromMemento(mementoList.get(stateIndex));
 
-                        income += originator.getBuilding().getIncome();
-                        incomeLabel.setText("Przichōd: " + income);
+                        scoreboard.setIncome(scoreboard.getIncome() + originator.getBuilding().getIncome());
 
-                        budget = originator.getBudget()-originator.getBuilding().getCost();
+                        scoreboard.setBudget(originator.getBudget()-originator.getBuilding().getCost());
 
                         originator.getBuildingPlace().setIcon(originator.getBuilding().getIcon());
 
                         currentBuildings.add(originator.getBuilding().getType());
                         stateIndex += 1;
-                        originator.print();
                     }
                 }
             }
@@ -140,21 +126,18 @@ public class City  implements ActionListener{
     public void build(Building building, JButton button){
         if (checkRequirements(building) ) {
             //Save state
-            originator.setState(budget, building, button);
+            originator.setState(scoreboard.getBudget(), building, button);
             this.addMemento(originator.saveStateToMemento());
-            originator.print();
             stateIndex++;
 
             //build
             button.setIcon(building.getIcon());
-            budget -= building.getCost();
-            income += building.getIncome();
-            budgetLabel.setText("Pijōndze: " + budget);
-            incomeLabel.setText("Przichōd: " + income);
+            scoreboard.setBudget(scoreboard.getBudget() - building.getCost());
+            scoreboard.setIncome(scoreboard.getIncome() + building.getIncome());
             currentBuildings.add(building.getSymbol());
         }
         else {
-            if (building.getCost() > budget)
+            if (building.getCost() > scoreboard.getBudget())
                 JOptionPane.showMessageDialog(jFrame, "Niy posiadŏsz za dość dużo pijyndzy");
             else
                 JOptionPane.showMessageDialog(jFrame, "Niy posiadŏsz wymŏganych budōnkōw");
@@ -163,7 +146,7 @@ public class City  implements ActionListener{
 
     private boolean checkRequirements(Building building) {
         List<String> requirements = new ArrayList<>(building.getRequirements());
-        if (building.getCost() > budget)
+        if (building.getCost() > scoreboard.getBudget())
             return false;
         for (String requirement : requirements){
             if (!currentBuildings.contains(requirement))
@@ -191,70 +174,8 @@ public class City  implements ActionListener{
         popup.show(button,190,136);
     }
 
-    private void setScorePanel(JLabel label, int direction, String text){
-        label.setBackground(new Color(25,25,25));
-        label.setForeground(new Color(25,255,0));
-        label.setFont(new Font("Arial", Font.BOLD, 75));
-        label.setHorizontalAlignment(direction);
-        label.setText(text);
-        label.setOpaque(true);
-    }
-
-    private void setDescriptionPanel(){
-        int textType;
-
-        List<String> desciptionList = new ArrayList<>(4);
-        desciptionList.add("");
-        desciptionList.add("Cyna");
-        desciptionList.add("Przichōd");
-        desciptionList.add("Wymŏganiŏ");
-
-        Building building = new Quarry();
-        for (int i = 0 ; i < 24 ; i++){
-            JLabel label = new JLabel();
-            label.setBackground(new Color(25,25,25));
-            label.setForeground(new Color(255,255,255));
-            label.setFont(new Font("Arial", Font.PLAIN, 30));
-            label.setHorizontalAlignment(JLabel.LEFT);
-            label.setOpaque(true);
-            if (i<4) {
-                label.setText(desciptionList.get(i));
-            }
-            else{
-                if (i==8)
-                    building = new WoodcuttersHut();
-                if (i==12)
-                    building = new Sawmill();
-                if (i==16)
-                    building = new GoldMine();
-                if (i==20)
-                    building = new Mint();
-
-                textType = i%4;
-                switch (textType){
-                    case 0:
-                        label.setText(building.getType());
-                        break;
-                    case 1:
-                        label.setText(String.valueOf(building.getCost()));
-                        break;
-                    case 2:
-                        label.setText(String.valueOf(building.getIncome()));
-                        break;
-                    case 3:
-                        label.setText(String.valueOf(building.getRequirements()));
-                        break;
-                }
-            }
-            description.add(label);
-        }
-    }
-
     public void addMemento(Memento state){
         mementoList.add(state);
     }
 
-    public Memento get(int index){
-        return mementoList.get(index);
-    }
 }
