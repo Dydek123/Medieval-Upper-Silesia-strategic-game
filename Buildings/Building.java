@@ -7,7 +7,7 @@ import java.util.List;
 public abstract class Building {
     protected Integer cost;
     protected String type;
-    protected String symbol; //TODO Change to icon
+    protected String symbol;
     protected Integer income;
     protected List<String> requirements = new ArrayList<>();
     protected Icon icon;

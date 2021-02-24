@@ -14,9 +14,9 @@ public class Description extends Panels{
 
         List<String> desciptionList = new ArrayList<>(4);
         desciptionList.add("");
-        desciptionList.add("Cyna");
-        desciptionList.add("Przichōd");
-        desciptionList.add("Wymŏganiŏ");
+        desciptionList.add("Prize");
+        desciptionList.add("Income");
+        desciptionList.add("Requirements");
 
         Building building = new Quarry();
         for (int i = 0 ; i < 24 ; i++){

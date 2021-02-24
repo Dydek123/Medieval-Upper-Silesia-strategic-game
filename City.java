@@ -42,8 +42,8 @@ public class City  implements ActionListener{
         jFrame.setVisible(true);
 
         //Score & income panel
-        scoreboard.setScorePanel(scoreboard.getBudgetLabel(),JLabel.LEFT,"Pijōndze: " + scoreboard.getBudget());
-        scoreboard.setScorePanel(scoreboard.getIncomeLabel(),JLabel.RIGHT,"Przichōd: "+ scoreboard.getIncome());
+        scoreboard.setScorePanel(scoreboard.getBudgetLabel(),JLabel.LEFT,"Budget: " + scoreboard.getBudget());
+        scoreboard.setScorePanel(scoreboard.getIncomeLabel(),JLabel.RIGHT,"Income: "+ scoreboard.getIncome());
         scoreboard.createPanel();
         jFrame.add(scoreboard.getPanel(),BorderLayout.NORTH);
 
@@ -138,9 +138,9 @@ public class City  implements ActionListener{
         }
         else {
             if (building.getCost() > scoreboard.getBudget())
-                JOptionPane.showMessageDialog(jFrame, "Niy posiadŏsz za dość dużo pijyndzy");
+                JOptionPane.showMessageDialog(jFrame, "You don't have enough money");
             else
-                JOptionPane.showMessageDialog(jFrame, "Niy posiadŏsz wymŏganych budōnkōw");
+                JOptionPane.showMessageDialog(jFrame, "You don't have required buildings");
         }
     }
 

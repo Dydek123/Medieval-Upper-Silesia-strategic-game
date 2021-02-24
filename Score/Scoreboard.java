@@ -32,12 +32,12 @@ public class Scoreboard extends Panels{
 
     public void setBudget(double budget) {
         this.budget = budget;
-        budgetLabel.setText("Pijōndze: " + budget);
+        budgetLabel.setText("Budget: " + budget);
     }
 
     public void setIncome(double income) {
         this.income = income;
-        incomeLabel.setText("Przichōd: " + income);
+        incomeLabel.setText("Income: " + income);
     }
 
     @Override
